@@ -1,6 +1,6 @@
 import { nwc } from "https://esm.sh/@getalby/sdk@3.7.0";
 
-const NWC_SECRET = 'nostr+walletconnect://a3b4e8afed8d60d6c120b9744970ad3f7c48f6722e5483376b1d7f91c7a112fb?relay=wss://relay.getalby.com/v1&secret=6f9afdde522bf4b918de6f29244d90dcd8e28aa78cbc01038b597f40f5338ad7';
+const NWC_SECRET = 'your-secret-here';
 let lastKnownBalance = null;
 let client;
 
