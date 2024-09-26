@@ -1,29 +1,47 @@
 import { nwc } from "https://esm.sh/@getalby/sdk@3.7.0";
 
-const NWC_SECRET = 'your-secret-here';
 let lastKnownBalance = null;
 let client;
 
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.alarms.create('checkBalance', { periodInMinutes: 0.1 }); // Check every 6 seconds
+  console.log("Extension installed. Initializing NWC.");
   initNWC();
 });
 
-chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === 'checkBalance') {
-    checkBalanceChange();
+chrome.storage.onChanged.addListener((changes, namespace) => {
+  if (namespace === 'sync' && (changes.nwcSecret || changes.checkFrequency)) {
+    console.log("NWC secret or check frequency changed. Reinitializing NWC.");
+    initNWC();
   }
 });
 
 async function initNWC() {
-  client = new nwc.NWCClient({nostrWalletConnectUrl: NWC_SECRET});
-  try {
-    lastKnownBalance = await getBalance();
-    console.log("NWC initialized successfully. Initial balance:", lastKnownBalance);
-  } catch (error) {
-    console.error("Error initializing NWC:", error);
-  }
+  chrome.storage.sync.get(['nwcSecret', 'checkFrequency'], async function(result) {
+    if (result.nwcSecret) {
+      client = new nwc.NWCClient({nostrWalletConnectUrl: result.nwcSecret});
+      try {
+        lastKnownBalance = await getBalance();
+        console.log("NWC initialized successfully. Initial balance:", lastKnownBalance);
+        
+        // Set up the alarm with the saved check frequency
+        const checkFrequency = result.checkFrequency || 6; // Default to 6 seconds if not set
+        console.log(`Setting up alarm to check balance every ${checkFrequency} seconds`);
+        chrome.alarms.create('checkBalance', { periodInMinutes: checkFrequency / 60 });
+      } catch (error) {
+        console.error("Error initializing NWC:", error);
+      }
+    } else {
+      console.log("NWC secret not set. Please set it in the extension popup.");
+    }
+  });
 }
+
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === 'checkBalance') {
+    console.log("Alarm triggered, checking balance");
+    checkBalanceChange();
+  }
+});
 
 async function getBalance(retries = 3) {
   for (let i = 0; i < retries; i++) {
@@ -40,13 +58,19 @@ async function getBalance(retries = 3) {
 }
 
 async function checkBalanceChange() {
+  console.log("Checking balance change...");
   try {
     const currentBalance = await getBalance();
-    console.log("Checking balance. Current:", currentBalance, "Last known:", lastKnownBalance);
+    console.log("Current balance:", currentBalance, "Last known balance:", lastKnownBalance);
     if (lastKnownBalance !== null && currentBalance > lastKnownBalance) {
       const difference = currentBalance - lastKnownBalance;
-      console.log("Balance increased. Triggering confetti for amount:", difference);
-      triggerConfetti(difference);
+      chrome.storage.sync.get(['threshold'], function(result) {
+        const threshold = result.threshold || 0; // Default to 0 if not set
+        if (difference >= threshold) {
+          console.log("Balance increased above threshold. Triggering confetti for amount:", difference);
+          triggerConfetti(difference);
+        }
+      });
     }
     lastKnownBalance = currentBalance;
   } catch (error) {
