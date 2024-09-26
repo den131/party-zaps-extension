@@ -1,0 +1,25 @@
+{
+    "manifest_version": 3,
+    "name": "NWC Transaction Notifier",
+    "version": "1.0",
+    "description": "Displays confetti on receive transactions using NWC",
+    "permissions": ["activeTab", "alarms"],
+    "host_permissions": ["<all_urls>"],
+    "background": {
+      "service_worker": "background.js",
+      "type": "module"
+    },
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["confetti.js", "content.js"],
+        "run_at": "document_idle"
+      }
+    ],
+    "action": {
+      "default_popup": "popup.html"
+    },
+    "icons": {
+      "48": "./icon.png"
+    }
+}
