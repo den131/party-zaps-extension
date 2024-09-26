@@ -3,7 +3,7 @@
     "name": "NWC Transaction Notifier",
     "version": "1.0",
     "description": "Displays confetti on receive transactions using NWC",
-    "permissions": ["activeTab", "alarms"],
+    "permissions": ["activeTab", "alarms", "storage"],
     "host_permissions": ["<all_urls>"],
     "background": {
       "service_worker": "background.js",
