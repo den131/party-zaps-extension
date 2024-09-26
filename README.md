@@ -21,5 +21,4 @@ The extension injects a content script into web pages, which communicates with t
 4. Click "Load unpacked" and select the directory containing the extension files.
 
 ## Configuration
-Add your NWC secret to `popup.js` and `background.js`.
-You can configure the transaction threshold and other settings directly in the `content.js` file.
+Click the extension and enter NWC connection secret and desired settings.
