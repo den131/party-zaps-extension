@@ -4,10 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NWC Tester</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            width: 350px;
+        }
+        .setting-group { 
+            margin-bottom: 15px; 
+            display: flex; 
+            align-items: center; 
+        }
+        label { 
+            display: block; 
+            margin-bottom: 5px; 
+            width: 100%; 
+        }
+        input { 
+            flex: 1; 
+            padding: 5px; 
+        }
+        button { 
+            width: 60px; 
+            margin-left: 5px; 
+        }
+        .status { 
+            color: green; 
+            margin-top: 5px; 
+            font-size: 0.9em; 
+        }
+    </style>
 </head>
 <body>
     <div id="popup">
         <h2>Everybody Loves Confetti</h2>
+        <div id="settings-form">
+            <div class="setting-group">
+                <label for="nwc-secret">NWC Connection Secret:</label>
+                <input type="password" id="nwc-secret" required>
+                <button id="save-nwc-secret">Save</button>
+            </div>
+            <div id="nwc-secret-status" class="status"></div>
+            
+            <div class="setting-group">
+                <label for="threshold">Threshold Amount (satoshis):</label>
+                <input type="number" id="threshold" required min="1">
+                <button id="save-threshold">Save</button>
+            </div>
+            <div id="threshold-status" class="status"></div>
+            
+            <div class="setting-group">
+                <label for="check-frequency">Check Frequency (seconds):</label>
+                <input type="number" id="check-frequency" required min="1">
+                <button id="save-check-frequency">Save</button>
+            </div>
+            <div id="check-frequency-status" class="status"></div>
+        </div>
     </div>
 
     <script src="popup.js"></script>
